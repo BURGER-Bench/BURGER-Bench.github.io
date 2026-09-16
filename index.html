@@ -1,14 +1,554 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BURGER</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BURGER: Benchmarking and Understanding Robotic Generalization via Embodied dRawing</title>
+<meta name="description" content="BURGER is a language-conditioned robotic drawing benchmark with a prompt-driven pipeline for generating continuous drawing trajectories in simulation and the real world. 28,200 demonstrations, 282 tasks, five VLA models.">
+<meta property="og:title" content="BURGER: Benchmarking and Understanding Robotic Generalization via Embodied dRawing">
+<meta property="og:description" content="A language-conditioned robotic drawing benchmark for diagnosing vision-language-action models.">
+<meta property="og:image" content="assets/posters/hero.jpg">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-  
-  <p>Welcome to BURGER-Bench</p>
 
+<nav id="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">BURGER</a>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#dataset">Dataset</a></li>
+      <li><a href="#diversity">Diversity</a></li>
+      <li><a href="#metric">Metric</a></li>
+      <li><a href="#findings">Findings</a></li>
+      <li><a href="#real">Real Robot</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ======================= HERO ======================= -->
+<header id="top" class="hero">
+  <div class="wrap">
+    <p class="venue">Submitted to ICRA 2027</p>
+    <h1 class="title">BURGER: <span class="title-sub">Benchmarking and Understanding Robotic
+      Generalization via Embodied d<span class="hl">R</span>awing</span></h1>
+
+    <p class="authors">Author list withheld — paper under double-blind review</p>
+
+    <div class="links">
+      <a class="btn" href="assets/BURGER_ICRA27.pdf">
+        <span class="btn-ic">PDF</span> Paper</a>
+      <a class="btn btn-off" aria-disabled="true" title="Not yet released">
+        <span class="btn-ic">arXiv</span> Coming soon</a>
+      <a class="btn btn-off" aria-disabled="true" title="Not yet released">
+        <span class="btn-ic">Code</span> Coming soon</a>
+      <a class="btn btn-off" aria-disabled="true" title="Not yet released">
+        <span class="btn-ic">Data</span> Coming soon</a>
+    </div>
+
+    <figure class="hero-fig">
+      <video class="hero-video" playsinline muted loop autoplay
+             poster="assets/posters/hero.jpg" preload="metadata">
+        <source src="assets/videos/hero.mp4" type="video/mp4">
+      </video>
+      <figcaption>A policy draws a hamburger on a blank canvas from the instruction alone.
+        The target sketch is never shown to the policy at inference time.</figcaption>
+    </figure>
+
+    <p class="lede">
+      Robot datasets are expensive, and most manipulation benchmarks give one instruction
+      exactly one right answer. <strong>BURGER</strong> turns language-conditioned
+      <em>drawing</em> into a robot-learning benchmark: the canvas starts blank, so the
+      policy cannot read the goal off the image, and every instruction admits many valid
+      strokes. We generate demonstrations from text prompts at essentially unlimited scale,
+      then use them to take five VLA models apart.
+    </p>
+
+    <ul class="stats">
+      <li><b>28,200</b><span>demonstrations</span></li>
+      <li><b>282</b><span>drawing tasks</span></li>
+      <li><b>5</b><span>VLA models evaluated</span></li>
+      <li><b>6.6×</b><span>more trajectory modes than LIBERO</span></li>
+      <li><b>3</b><span>simulators + real Franka</span></li>
+    </ul>
+  </div>
+</header>
+
+<!-- ======================= OVERVIEW VIDEO ======================= -->
+<section id="overview" class="section">
+  <div class="wrap">
+    <h2>Overview video</h2>
+    <p class="section-lede">
+      Three minutes on the motivation, the prompt-to-trajectory pipeline, the dataset, and
+      the simulated and real-robot results. Audio on.
+    </p>
+    <video class="wide-video" controls playsinline preload="none"
+           poster="assets/posters/overview.jpg">
+      <source src="assets/videos/overview.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
+
+<!-- ======================= MOTIVATION ======================= -->
+<section id="motivation" class="section alt">
+  <div class="wrap narrow">
+    <h2>Why drawing?</h2>
+    <p>
+      VLA models are supposed to get better as robot data gets bigger and more diverse. Testing
+      that claim needs datasets whose scale and diversity you can actually turn up — and physical
+      demonstrations are too expensive to collect that way. Drawing gives us a data regime with
+      four properties that manipulation benchmarks usually lack.
+    </p>
+    <dl class="reasons">
+      <dt>The canvas starts blank.</dt>
+      <dd>Nothing in the first observation hints at what to draw, so the policy has to get the
+        task from the language. A common visual shortcut is closed off by construction.</dd>
+
+      <dt>Language complexity is a dial.</dt>
+      <dd>Prompts compose objects, attributes and spatial relations, so semantic difficulty can be
+        increased systematically rather than by hand-authoring new scenes.</dd>
+
+      <dt>One instruction, many correct answers.</dt>
+      <dd>Stroke order, starting point and drawing direction all vary freely. This is genuine
+        within-instruction multimodality — the thing a unimodal regressor provably cannot fit.</dd>
+
+      <dt>Failures are visible.</dt>
+      <dd>The finished canvas plus the execution trajectory make semantic, spatial and
+        motor errors separately inspectable, instead of collapsing everything into one
+        success bit.</dd>
+    </dl>
+    <p class="aside">
+      We are not proposing drawing as a replacement for manipulation benchmarks. It abstracts
+      away contact-rich interaction and object dynamics. It isolates a different set of
+      capabilities — grounding, long-horizon continuous action, multimodality, data scaling —
+      and measures those well.
+    </p>
+  </div>
+</section>
+
+<!-- ======================= PIPELINE ======================= -->
+<section id="pipeline" class="section">
+  <div class="wrap">
+    <h2>From a text prompt to a robot trajectory</h2>
+    <p class="section-lede">
+      Every demonstration in BURGER is generated automatically. No human teleoperation is in
+      the loop, which is what makes the dataset scalable.
+    </p>
+
+    <ol class="pipeline">
+      <li>
+        <span class="step">1</span>
+        <h3>Prompt</h3>
+        <p>A bank of natural-language prompts — <em>“draw a hamburger”</em>,
+          <em>“draw a cloud on the left of a moon”</em> — drawn from 132 single-object classes
+          and 150 compositions.</p>
+      </li>
+      <li>
+        <span class="step">2</span>
+        <h3>Prompt → PNG</h3>
+        <p>A text-to-image model renders a sketch-style raster image for the prompt, giving
+          open-ended visual variety for the same words.</p>
+      </li>
+      <li>
+        <span class="step">3</span>
+        <h3>Skeletonize</h3>
+        <p>Binarization, connected-component analysis and morphological skeletonization reduce
+          the image to one-pixel-wide centerlines. Solid regions such as eyes become contours.</p>
+      </li>
+      <li>
+        <span class="step">4</span>
+        <h3>Stroke order</h3>
+        <p>The skeleton is split into strokes and ordered by a heuristic that draws top-to-bottom,
+          outlines before details, and prefers hopping to a nearby stroke next.</p>
+      </li>
+      <li>
+        <span class="step">5</span>
+        <h3>Robot execution</h3>
+        <p>A simulated arm replays the strokes under an end-effector pose controller, with
+          pen-lift transitions inserted between disconnected strokes. Marks appear when the
+          tool approaches the canvas.</p>
+      </li>
+      <li>
+        <span class="step">6</span>
+        <h3>Record</h3>
+        <p>RGB observations, proprioception and actions are logged as (observation, action)
+          pairs in HDF5, then converted to standard robot-dataset formats for training.</p>
+      </li>
+    </ol>
+
+    <div class="stage-strip">
+      <figure><img src="assets/figures/stage_canvas.jpg" alt="Blank canvas at the start of an episode" loading="lazy"><figcaption>t = 0 · blank canvas</figcaption></figure>
+      <figure><img src="assets/figures/stage_mid.jpg" alt="Partially completed drawing mid-episode" loading="lazy"><figcaption>mid-episode · strokes accumulate</figcaption></figure>
+      <figure><img src="assets/figures/stage_done.jpg" alt="Completed drawing at the end of the episode" loading="lazy"><figcaption>t = end · finished drawing</figcaption></figure>
+    </div>
+
+    <h3 class="sub">Stroke ordering, step by step</h3>
+    <p class="section-lede">
+      Ten independently generated hamburgers, animated in the order the robot draws them.
+      Same prompt, different images, different stroke decompositions — this is where the
+      dataset's within-instruction variety comes from.
+      <span class="note">Web-only: the paper shows a single static SVG.</span>
+    </p>
+    <div class="gif-grid" id="strokeGrid"></div>
+
+    <h3 class="sub">The pipeline is not tied to one simulator</h3>
+    <p class="section-lede">
+      The same SVG task, executed through three different robot-control interfaces. The
+      trajectory-generation step is simulator-agnostic.
+    </p>
+    <div class="video-grid three ar43">
+      <figure><video data-lazy="assets/videos/sim_sapien.mp4" poster="assets/posters/sim_sapien.jpg" muted loop playsinline preload="none"></video><figcaption>SAPIEN <span>(ManiSkill — used for the main dataset)</span></figcaption></figure>
+      <figure><video data-lazy="assets/videos/sim_mujoco.mp4" poster="assets/posters/sim_mujoco.jpg" muted loop playsinline preload="none"></video><figcaption>MuJoCo</figcaption></figure>
+      <figure><video data-lazy="assets/videos/sim_isaac.mp4" poster="assets/posters/sim_isaac.jpg" muted loop playsinline preload="none"></video><figcaption>Isaac Sim</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= DATASET GALLERY ======================= -->
+<section id="dataset" class="section alt">
+  <div class="wrap">
+    <h2>Dataset gallery</h2>
+    <p class="section-lede">
+      132 single-object classes selected from Quick, Draw! for being real-world common and
+      drawable by an arm, plus 150 compositional classes pairing two objects with a spatial
+      relation — 100 left–right and 50 vertical. 100 trajectories per class, 28,200 total.
+      Below: 32 classes executing in simulation. Hover or tap to play.
+      <span class="note">Web-only: the paper has room for a handful of static canvases.</span>
+    </p>
+    <div class="video-grid gallery" id="galleryGrid"></div>
+
+    <div class="numbers">
+      <div><b>132</b><span>single-object classes</span></div>
+      <div><b>150</b><span>compositional classes</span></div>
+      <div><b>100</b><span>demos per class</span></div>
+      <div><b>15,000</b><span>compositional trajectories</span></div>
+      <div><b>28,200</b><span>trajectories total</span></div>
+      <div><b>10 × 10</b><span>real-robot classes × demos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= DIVERSITY ======================= -->
+<section id="diversity" class="section">
+  <div class="wrap">
+    <h2>One instruction, many trajectories</h2>
+    <p class="section-lede">
+      This is the claim that distinguishes BURGER from a manipulation benchmark, so we measured
+      it rather than asserted it. Trajectories are resampled to 32 points, described by their
+      start-relative <span class="mono">xy</span> path and step vectors, and clustered against a
+      single shared k-means codebook fitted on the pooled data. Effective modes per instruction
+      is <span class="mono">exp(H)</span> over that instruction's cluster histogram — 1.0 means
+      every episode of the instruction takes the same route.
+    </p>
+
+    <figure class="fig">
+      <img src="assets/figures/diversity_overlay.png" alt="Overlaid planar end-effector trajectories for the same instruction, comparing LIBERO demonstrations, BURGER demonstrations, and pi-0.5 rollouts" loading="lazy">
+      <figcaption>Trajectories overlaid per instruction. LIBERO demonstrations (top) collapse onto
+        one route; BURGER demonstrations (middle) spread across many; π<sub>0.5</sub> rollouts
+        (bottom) keep several of those modes after training.</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+      <table>
+        <caption>Count-matched comparison: 40 instructions and ≈42 episodes per instruction on
+          each side, identical processing, one shared k = 24 codebook.</caption>
+        <thead><tr><th>Metric</th><th>LIBERO</th><th>BURGER</th><th>Ratio</th></tr></thead>
+        <tbody>
+          <tr><td>Effective modes per instruction (mean)</td><td>1.09</td><td><b>7.13</b></td><td>6.6×</td></tr>
+          <tr><td>Effective modes per instruction (median)</td><td>1.00</td><td><b>7.50</b></td><td>7.5×</td></tr>
+          <tr><td>Range across instructions</td><td>1.00 – 1.96</td><td>1.61 – 11.24</td><td>—</td></tr>
+          <tr><td>Distinct clusters per instruction (mean)</td><td>1.25</td><td><b>9.88</b></td><td>7.9×</td></tr>
+          <tr><td>Clusters used dataset-wide (of 24)</td><td>12</td><td>22</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      The mean ratio is the headline, but the distribution is the stronger statement:
+      <strong>31 of LIBERO's 40 instructions score exactly 1.00</strong> — every one of their
+      ~42 episodes falls in a single trajectory cluster. BURGER's quartiles are 5.61 / 7.50 / 9.50.
+      The two distributions are almost disjoint, with a single crossing pair out of 40 each.
+    </p>
+
+    <details class="deep">
+      <summary>How robust is this to the clustering resolution? <span>(web-only analysis)</span></summary>
+      <div class="deep-body">
+        <p>
+          <span class="mono">k</span> is the one free parameter, so we swept it. The ratio moves
+          with <span class="mono">k</span>, so it should always be quoted with one. The
+          <span class="mono">k</span>-independent fact is the more useful one:
+          <strong>LIBERO stays pinned at 1.05–1.10 at every resolution</strong>, while BURGER's
+          count keeps rising — which is what real multimodality looks like.
+        </p>
+        <div class="table-wrap">
+          <table class="compact">
+            <thead><tr><th>k</th><th>8</th><th>12</th><th>16</th><th>24</th><th>32</th><th>48</th></tr></thead>
+            <tbody>
+              <tr><td>LIBERO</td><td>1.05</td><td>1.10</td><td>1.09</td><td>1.09</td><td>1.06</td><td>1.05</td></tr>
+              <tr><td>BURGER</td><td>3.63</td><td>5.12</td><td>6.00</td><td>7.13</td><td>7.86</td><td>9.22</td></tr>
+              <tr><td>Ratio</td><td>3.44×</td><td>4.66×</td><td>5.51×</td><td>6.57×</td><td>7.44×</td><td>8.76×</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          We also show the adversarial pairing rather than hiding it: LIBERO's <em>most</em>
+          multimodal instruction (“open the middle drawer of the cabinet”, 1.96) against BURGER's
+          <em>least</em> (“draw a smiley face”, 1.61). That is the one crossing pair.
+          The instructions drawn in the overlay figure above are each dataset's own median case.
+        </p>
+        <figure class="fig">
+          <img src="assets/figures/not_cherrypicked.png" alt="Scatter of effective modes for all 40 LIBERO and 40 BURGER instructions, with the overlay figure's instructions highlighted" loading="lazy">
+          <figcaption>All 40 + 40 instructions plotted. The four used in the overlay figure are ringed.</figcaption>
+        </figure>
+      </div>
+    </details>
+
+    <details class="deep">
+      <summary>Isn't LIBERO just placing objects in fixed positions? <span>(web-only analysis)</span></summary>
+      <div class="deep-body">
+        <p>
+          LIBERO's objects do move — but between instructions, not between episodes of one
+          instruction. Measured from the grasp point over 38 instructions with a detectable
+          grasp, within-instruction spread is <b>2.22 cm</b> (median) while between-instruction
+          spread is <b>18.95 cm</b>, a factor of 8.6.
+        </p>
+        <p>
+          That is deliberate benchmark design, not missing randomization: LIBERO encodes spatial
+          variation <em>in the language</em>, and the capability under test is grounding different
+          phrases to different coordinates. The consequence matters for us, though. Cross-instruction
+          variation asks a policy for a deterministic mapping, which a unimodal regressor satisfies
+          completely. Within-instruction multimodality asks it to represent a distribution, which a
+          unimodal regressor cannot — it converges to the conditional mean.
+        </p>
+        <p>
+          That is testable without training anything. Using the same cluster assignment, with the
+          mode radius as the reference scale:
+        </p>
+        <div class="table-wrap">
+          <table class="compact">
+            <thead><tr><th></th><th>LIBERO</th><th>BURGER</th></tr></thead>
+            <tbody>
+              <tr><td>Instructions with ≥ 2 occupied modes</td><td>22%</td><td>100%</td></tr>
+              <tr><td>d(conditional mean → nearest mode centre) / mode radius</td><td><b>0.00</b></td><td><b>0.68</b></td></tr>
+              <tr><td>d(conditional mean → nearest real trajectory) / mode radius</td><td>0.53</td><td>0.96</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          LIBERO's <b>0.00</b> is the key number: the conditional mean <em>is</em> a mode centre,
+          because 78% of its instructions have only one mode. Averaging discards nothing, so a
+          unimodal regressor and a distribution-modelling policy produce the same answer and the
+          benchmark cannot separate them. On BURGER the mean sits 0.68 mode-radii out, in the gap
+          between modes — <strong>the average of several valid drawings is not a valid drawing</strong>.
+        </p>
+        <p class="aside">
+          Honest counterweight: BURGER spans <em>less</em> 3-D volume than LIBERO (0.33×), because
+          drawing is planar — z thickness is 0.23×. That is a depth effect, not an in-plane one. The
+          pooled <span class="mono">xy</span> footprints nearly coincide (1.02×), and within a single
+          instruction BURGER sweeps <b>2.5× more canvas area</b>. Action-space cluster counts favour
+          LIBERO, but are not comparable: BURGER holds 4 of 7 action dimensions constant by task
+          design (three rotations and pen state), so that metric measures the action
+          parameterization, not behavioural richness.
+        </p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ======================= METRIC ======================= -->
+<section id="metric" class="section alt">
+  <div class="wrap narrow">
+    <h2>Scoring a drawing</h2>
+    <p>
+      Grading drawings is awkward precisely because they are multimodal: the same object can be
+      rendered with different shapes and stroke orders and still be correct. Global image–text
+      metrics miss fine-grained errors — CLIPScore will happily reward “an apple to the right of
+      a pear” when the drawing shows the opposite.
+    </p>
+    <p>
+      So we build a sketch-specific metric space on a frozen DINOv3 backbone. The CLS token and
+      mean-pooled patch embeddings are concatenated and mapped by a small two-layer MLP into a
+      normalized sketch embedding, trained with a cosine classifier under classification and
+      supervised-contrastive objectives so drawings of one class cluster tightly. Each class is
+      then represented by the prototype of its training embeddings, and a generated drawing is
+      scored by similarity to its target prototype. For compositional prompts we split the canvas
+      at the minimum-connectivity boundary between the two foreground regions, score each object
+      separately, and check that their spatial relation matches the instruction.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <caption>Agreement with human judgments. 66 participants rank five drawings per class —
+          four from VLA policies and one reference — across 10 single-object classes.</caption>
+        <thead><tr><th>Metric</th><th>Spearman ρ</th><th>Kendall τ<sub>b</sub></th><th>Pairwise agreement</th></tr></thead>
+        <tbody>
+          <tr><td>CLIPScore</td><td>0.592</td><td>0.433</td><td>0.803</td></tr>
+          <tr><td><b>Ours (DINOv3 prototype)</b></td><td><b>0.834</b></td><td><b>0.655</b></td><td><b>0.875</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= FINDINGS ======================= -->
+<section id="findings" class="section">
+  <div class="wrap">
+    <h2>What BURGER shows about VLA models</h2>
+    <p class="section-lede">
+      We evaluate π<sub>0</sub>, π<sub>0.5</sub>, π<sub>0</sub>-FAST, OpenVLA and OpenVLA-OFT —
+      spanning flow-matching, autoregressive and parallel-decoding action generation.
+    </p>
+
+    <div class="findings">
+      <article>
+        <h3>Scaling helps, but not uniformly</h3>
+        <p>
+          Sweeping training classes from 10 to 132 and demonstrations per class from 10 to 100,
+          drawing quality generally improves along both axes — clearly for the flow-matching models
+          π<sub>0</sub> and π<sub>0.5</sub>. π<sub>0</sub>-FAST fluctuates more and does not
+          consistently benefit, appearing more sensitive to the multimodal data distribution.
+        </p>
+      </article>
+      <article>
+        <h3>Grounding works in-distribution, and stops at its edge</h3>
+        <p>
+          Across trained categories, different instructions from the same blank canvas produce the
+          right different objects, with no evident confusion between them. Name a category that was
+          not in training and the models do not produce it — they fall back on similar unstructured
+          strokes across different unseen prompts. Grounding is solid for learned concepts and does
+          not extend beyond them.
+        </p>
+      </article>
+      <article>
+        <h3>Spatial relations transfer to unseen pairs</h3>
+        <p>
+          Trained on compositional tasks, policies produce valid left–right and over–under
+          compositions for object pairs never seen together — a cup to the left of an apple, for
+          instance — and distinguish the different relational instructions. The relation is learned
+          as a relation, not memorized per pair.
+        </p>
+      </article>
+      <article>
+        <h3>Flow-matching policies keep their modes</h3>
+        <p>
+          Applying the same clustering to π<sub>0.5</sub> rollouts: where the training data for four
+          representative tasks holds ≈7.5 effective modes per instruction, the trained policy retains
+          <b>3.6–5.1</b>. It learns a distribution of valid drawings rather than one route.
+        </p>
+      </article>
+      <article>
+        <h3>Action chunking buys coherence, not coverage</h3>
+        <p>
+          In a controlled circle-drawing study — 100 demos sharing shape and radius while varying
+          centre, start point and direction — OpenVLA keeps canvas contact but loses planar progress,
+          while OpenVLA-OFT at chunk length 1 often fails to establish stable contact. Going from
+          chunk 1 to 8 substantially improves contact and trajectory coherence. But coherent execution
+          is not mode coverage: OFT with chunks and π<sub>0</sub>-FAST concentrate on a subset of start
+          points and directions, while π<sub>0</sub> and π<sub>0.5</sub> preserve the diversity.
+          Chunking governs execution coherence; the action-generation formulation governs
+          multimodality.
+        </p>
+      </article>
+      <article>
+        <h3>Each model fails its own way</h3>
+        <p>
+          OpenVLA and π<sub>0</sub>-FAST are sensitive to the initial end-effector position —
+          OpenVLA can get trapped in a local region, π<sub>0</sub>-FAST can drift off the target area.
+          Flow-matching policies instead sometimes fail to <em>stop</em> after finishing the object,
+          overpainting the canvas. On compositional prompts, object quality can degrade even when the
+          spatial relation is right, and more so once the instruction space widens from horizontal to
+          both horizontal and vertical relations — holding relational grounding and object geometry
+          together is harder than either alone.
+        </p>
+      </article>
+    </div>
+
+    <h3 class="sub">Multimodality you can watch</h3>
+    <p class="section-lede">
+      Three rollouts of the same real-robot instruction, <em>“draw a bicycle”</em>, from the same
+      policy. Different routes, all valid.
+      <span class="note">Web-only: the paper can only show static end canvases.</span>
+    </p>
+    <div class="video-grid three">
+      <figure><video data-lazy="assets/videos/multi_bicycle_a.mp4" poster="assets/posters/multi_bicycle_a.jpg" muted loop playsinline preload="none"></video><figcaption>Rollout A</figcaption></figure>
+      <figure><video data-lazy="assets/videos/multi_bicycle_b.mp4" poster="assets/posters/multi_bicycle_b.jpg" muted loop playsinline preload="none"></video><figcaption>Rollout B</figcaption></figure>
+      <figure><video data-lazy="assets/videos/multi_bicycle_c.mp4" poster="assets/posters/multi_bicycle_c.jpg" muted loop playsinline preload="none"></video><figcaption>Rollout C</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= REAL ROBOT ======================= -->
+<section id="real" class="section alt">
+  <div class="wrap">
+    <h2>On a real Franka Panda</h2>
+    <p class="section-lede">
+      The real-robot dataset follows the same format as the simulated one, with two RealSense
+      views from the front and back of the workspace; either can serve as the visual input. We
+      collect 10 single-object classes at 10 demonstrations each and fine-tune π<sub>0.5</sub>
+      directly on it. The resulting policy executes real drawing tasks reliably, stays effective
+      under camera-viewpoint changes, and closes the loop on canvas state: given a partially drawn
+      cup it adds the missing handle, and when a human draws the rear wheel of a bicycle it skips
+      that component and continues with the rest.
+    </p>
+    <div class="video-grid gallery" id="realGrid"></div>
+    <p class="aside">
+      Rollouts are the front camera view of the deployment recordings, trimmed and re-encoded for
+      the web. Each plays on hover or tap.
+    </p>
+  </div>
+</section>
+
+<!-- ======================= LIMITATIONS ======================= -->
+<section id="limitations" class="section">
+  <div class="wrap narrow">
+    <h2>Limitations</h2>
+    <p>
+      <strong>The physics is simplified.</strong> Unlike robotic painting systems that model brush
+      dynamics, BURGER targets sketch-level stroke generation with a rigid drawing tool. That is
+      what makes it scalable, and it means the benchmark says nothing about contact-rich artistic
+      media.
+    </p>
+    <p>
+      <strong>The data inherits the generator's biases.</strong> Sketches come from a text-to-image
+      model and stroke order from our heuristic, so the dataset may encode drawing styles that
+      differ from how people actually draw. It should not be read as a model of human drawing
+      behaviour.
+    </p>
+    <p>
+      <strong>It is a diagnostic, not a substitute.</strong> Drawing abstracts away object dynamics
+      and much of the uncertainty that makes manipulation hard. BURGER is meant to sit alongside
+      manipulation benchmarks and isolate capabilities they measure poorly.
+    </p>
+  </div>
+</section>
+
+<!-- ======================= BIBTEX ======================= -->
+<section id="cite" class="section alt">
+  <div class="wrap narrow">
+    <h2>BibTeX</h2>
+    <p class="section-lede">The paper is under double-blind review; this entry will be updated on acceptance.</p>
+    <pre class="bib"><code>@inproceedings{burger2027,
+  title     = {BURGER: Benchmarking and Understanding Robotic
+               Generalization via Embodied dRawing},
+  author    = {Anonymous},
+  booktitle = {Under review, IEEE International Conference on
+               Robotics and Automation (ICRA)},
+  year      = {2027}
+}</code></pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap narrow">
+    <p>Project page for BURGER, released anonymously for double-blind review.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
 </body>
 </html>
