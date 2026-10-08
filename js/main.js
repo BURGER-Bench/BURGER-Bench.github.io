@@ -16,19 +16,11 @@
     'palm_tree', 'piano', 'pineapple', 'rabbit', 'sailboat', 'shoe', 'snowman', 'sun', 'television',
     'train', 'umbrella', 'vase'];
   var PIPE = ['bicycle', 'cat', 'owl', 'sailboat', 'birthday_cake', 'elephant', 'guitar', 'house'];
-  var COMP = [['comp_unseen_0', 'an apple left of a cloud'], ['comp_unseen_1', 'a book left of a star'],
-    ['comp_unseen_2', 'a moon over a cup'], ['comp_unseen_3', 'a flower under a house']];
+  var COMP = [['comp_leaf_moon', 'a leaf left of a moon', 'seen pair'], ['comp_apple_berry', 'an apple left of a blueberry', 'unseen pair']];
   var CIRC = [['circ_openvla', 'OpenVLA', 'autoregressive'], ['circ_oft1', 'OpenVLA-OFT', 'chunk 1'],
     ['circ_oft8', 'OpenVLA-OFT', 'chunk 8'], ['circ_fast', 'π0-FAST', 'FAST tokens'],
     ['circ_pi05', 'π0.5', 'flow matching']];
   var SIMS = [['sim_sapien', 'SAPIEN (ManiSkill)'], ['sim_mujoco', 'MuJoCo'], ['sim_isaac', 'Isaac Sim']];
-  var CANVAS_ROWS = [  // all 10 evaluation episodes each; unseen pairs first, then seen
-    ['unseen_an_apple_left_cloud', 'an apple left of a cloud', 'unseen pair'],
-    ['unseen_a_book_left_star', 'a book left of a star', 'unseen pair'],
-    ['unseen_a_moon_over_cup', 'a moon over a cup', 'unseen pair'],
-    ['unseen_a_flower_under_house', 'a flower under a house', 'unseen pair'],
-    ['seen_a_leaf_left_moon', 'a leaf left of a moon', 'seen in training'],
-    ['seen_a_shoe_over_sock', 'a shoe over a sock', 'seen in training']];
   var KSWEEP = [  // data_dist_analysis robustness sweep (same codebook procedure, k varied)
     { k: 8, lib: 1.055, bur: 3.633 }, { k: 12, lib: 1.099, bur: 5.124 }, { k: 16, lib: 1.088, bur: 5.999 },
     { k: 24, lib: 1.085, bur: 7.130 }, { k: 32, lib: 1.056, bur: 7.858 }, { k: 48, lib: 1.053, bur: 9.224 }];
@@ -88,19 +80,13 @@
   fill('gallery', GALLERY, function (c) { return tile('g_' + c, c.replace(/_/g, ' '), { label: 'Demonstration: draw a ' + c.replace(/_/g, ' ') }); });
   fill('same-helmet', [0, 1, 2, 3, 4, 5, 6, 7], function (i) { return tile('same_helmet_' + i, null, { auto: true, label: 'Helmet demonstration ' + (i + 1) }); });
   fill('sims', SIMS, function (s) { return tile(s[0], s[1], { auto: true }); });
-  fill('comp-videos', COMP, function (c) { return tile(c[0], '<q>draw ' + c[1] + '</q>'); });
+  fill('comp-videos', COMP, function (c) { return tile(c[0], '<q>draw ' + c[1] + '</q> <span class="hint">· ' + c[2] + '</span>'); });
   fill('circ', CIRC, function (c) { return tile(c[0], c[1] + '<span>' + c[2] + '</span>', { auto: true, label: c[1] + ' ' + c[2] + ' drawing a circle' }); });
   $$('[data-clips]').forEach(function (el) {
     el.dataset.clips.split('|').forEach(function (s) {
       var kv = s.split(':');   // every clip in these rows is real hardware footage
       el.appendChild(tile(kv[0], kv[1], { real: true }));
     });
-  });
-  fill('comp-canvases', CANVAS_ROWS, function (r) {
-    var d = document.createElement('div'); d.className = 'crow';
-    d.innerHTML = '<div class="t"><b>' + r[1] + '</b>' + r[2] + '</div><div class="scroller"><img loading="lazy" decoding="async" height="150" ' +
-      'src="assets/images/canvas/' + r[0] + '.webp" alt="Final canvases of all 10 evaluation episodes: draw ' + r[1] + '"></div>';
-    return d;
   });
   wireTiles(document); observe(document);
   // speed badges: measured playback speed vs. real (or simulated) time, see build/speeds.py
@@ -112,7 +98,7 @@
     });
   });
   // details: load sources only when opened
-  $$('details.more').forEach(function (d) { d.addEventListener('toggle', function () { if (d.open) observe(d); }); });
+  $$('details').forEach(function (d) { d.addEventListener('toggle', function () { if (d.open) observe(d); }); });
 
   // hero: stop decoding when scrolled away
   var hero = document.getElementById('hero-video');

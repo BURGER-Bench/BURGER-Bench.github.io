@@ -25,12 +25,10 @@
     <nav aria-label="Sections">
       <button class="nav-toggle" aria-expanded="false" aria-controls="navlist">Sections</button>
       <ul id="navlist">
-        <li><a href="#idea">Idea</a></li>
-        <li><a href="#evidence">Diversity</a></li>
-        <li><a href="#pipeline">Pipeline</a></li>
-        <li><a href="#dataset">Dataset</a></li>
-        <li><a href="#results">Results</a></li>
-        <li><a href="#diagnosis">Diagnosis</a></li>
+        <li><a href="#abstract">Abstract</a></li>
+        <li><a href="#motivation">Motivation</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#experiments">Experiments</a></li>
         <li><a href="#real">Real robot</a></li>
         <li><a href="#cite">Cite</a></li>
       </ul>
@@ -41,34 +39,29 @@
 <main id="main">
 <!-- HERO -->
 <section class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div class="hero-text">
-      <p class="eyebrow">Under review · ICRA 2027</p>
-      <h1><span class="wordmark">BURGER</span>
-        <span class="subtitle">Benchmarking and Understanding Robotic Generalization via Embodied d<em>R</em>awing</span></h1>
-      <p class="authors">Anonymous authors · paper under double-blind review</p>
-      <div class="links" role="list">
-        <a role="listitem" class="btn" href="assets/BURGER_ICRA27.pdf">Paper (PDF)</a>
-        <span role="listitem" class="btn off" aria-disabled="true">arXiv · soon</span>
-        <span role="listitem" class="btn off" aria-disabled="true">Code · soon</span>
-        <span role="listitem" class="btn off" aria-disabled="true">Dataset · soon</span>
-        <a role="listitem" class="btn ghost" href="#overview-video">Video</a>
-      </div>
-      <p class="tldr">A robot starts from a blank canvas and an instruction like <q>draw a hamburger</q>.
-        There is no single right answer: every instruction admits many valid drawings, stroke orders and routes.
-        That makes drawing a controlled, scalable way to ask whether a VLA policy has learned a
-        <strong>distribution of behaviours</strong> or memorised one.</p>
+  <div class="wrap narrow center">
+    <p class="eyebrow">Under review · ICRA 2027</p>
+    <h1><span class="wordmark">BURGER</span>
+      <span class="subtitle">Benchmarking and Understanding Robotic Generalization via Embodied d<em>R</em>awing</span></h1>
+    <p class="authors">Anonymous authors · paper under double-blind review</p>
+    <div class="links" role="list">
+      <a role="listitem" class="btn" href="assets/BURGER_ICRA27.pdf">Paper (PDF)</a>
+      <a role="listitem" class="btn ghost" href="#video">Video</a>
+      <span role="listitem" class="btn off" aria-disabled="true">arXiv · soon</span>
+      <span role="listitem" class="btn off" aria-disabled="true">Code · soon</span>
+      <span role="listitem" class="btn off" aria-disabled="true">Dataset · soon</span>
     </div>
+  </div>
+  <div class="wrap">
     <figure class="hero-media">
       <video id="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/posters/hero.jpg"
              aria-label="Simulated Franka arm drawing a hamburger on a blank canvas">
         <source src="assets/videos/hero_sm.mp4" type="video/mp4" media="(max-width: 720px)">
         <source src="assets/videos/hero.mp4" type="video/mp4">
       </video>
-      <figcaption>A generated demonstration: <q>draw a hamburger</q>, replayed in simulation. Time-lapse, about 8× real time.</figcaption>
+      <figcaption>From a blank canvas and the instruction <q>draw a hamburger</q>, a robot arm produces one of many
+        valid drawings. Generated demonstration, replayed in simulation, about 8× real time.</figcaption>
     </figure>
-  </div>
-  <div class="wrap">
     <dl class="stats">
       <div><dt>Demonstrations</dt><dd>28,200</dd></div>
       <div><dt>Drawing tasks</dt><dd>282</dd><span>132 objects · 150 compositions</span></div>
@@ -79,47 +72,48 @@
   </div>
 </section>
 
-<!-- IDEA -->
-<section class="sec" id="idea">
-  <div class="wrap">
-    <p class="kicker">The idea</p>
-    <h2>Why draw?</h2>
-    <div class="three">
-      <article>
-        <span class="num">1</span>
-        <h3>No visual shortcut</h3>
-        <p>Every episode starts from the same blank canvas. The goal can't be read off the first image —
-          it has to come from the language.</p>
-      </article>
-      <article>
-        <span class="num">2</span>
-        <h3>Many right answers</h3>
-        <p>One instruction admits many valid drawings that differ in shape, stroke order, start point and
-          direction. A policy that averages them draws nothing recognisable.</p>
-      </article>
-      <article>
-        <span class="num">3</span>
-        <h3>Failures you can see</h3>
-        <p>The canvas is the record. Semantic, spatial and execution failures stay visible on paper, so you
-          can diagnose them, not just count them.</p>
-      </article>
-    </div>
-    <p class="scope">BURGER isn't a replacement for manipulation benchmarks. Drawing abstracts away
-      contact-rich interaction and object dynamics. What it isolates is language grounding, long-horizon
-      continuous action and <em>multimodal</em> behaviour, at a data scale that would be costly to collect on hardware.</p>
+<!-- ABSTRACT -->
+<section class="sec" id="abstract">
+  <div class="wrap narrow">
+    <h2>Abstract</h2>
+    <p class="abstract">How effectively can vision-language-action (VLA) models learn diverse language-conditioned
+      behaviours as training data scales? Answering this needs large, varied robot datasets, which are costly to
+      collect on hardware. We introduce <b>BURGER</b>, a language-conditioned robotic drawing benchmark with a scalable,
+      prompt-driven pipeline that generates continuous drawing trajectories in simulation and in the real world.
+      An agent starts from the same blank canvas and draws the object or spatial composition named in the instruction,
+      and every instruction admits an open-ended variety of valid drawings and stroke orders. Using 28,200 simulated
+      demonstrations over 282 tasks, we evaluate five representative VLA models across data scale, language grounding
+      and multimodal behaviour. Some VLAs benefit from more task diversity and more demonstrations, capture multimodal
+      drawing behaviour, and generalise to unseen compositions of familiar objects, while the canvases expose distinct
+      failure patterns per model. Finally, we deploy a trained policy on a Franka Panda that draws reactively under
+      human intervention.</p>
   </div>
 </section>
 
-<!-- EVIDENCE -->
-<section class="sec tint" id="evidence">
+<!-- 1 MOTIVATION -->
+<section class="sec tint" id="motivation">
   <div class="wrap">
-    <p class="kicker">Key evidence</p>
-    <h2>One instruction, many valid routes</h2>
-    <p class="lede">We overlay every demonstration of a single instruction as planar end-effector paths,
-      all aligned at their start point, then count how many distinct routes they take.
-      Most LIBERO instructions take <b>one</b> route. BURGER instructions take about <b>seven</b> on average.</p>
+    <header class="sec-head">
+      <p class="secnum">1</p>
+      <h2>Motivation</h2>
+      <p class="sub">Drawing is a controlled, scalable test of whether a VLA learns a distribution of behaviours or memorises one route.</p>
+    </header>
 
-    <div class="explorer" id="explorer">
+    <div class="wrap-text">
+      <p>VLA models increasingly benefit from larger and more diverse data, but testing whether an architecture can
+        actually <em>use</em> such data needs datasets with controllable scale and diversity, and evaluations that
+        separate different kinds of failure. Robotic drawing gives exactly that, for three reasons:</p>
+      <ol class="reasons">
+        <li><b>No visual shortcut.</b> Every episode starts from the same blank canvas, so the goal has to come from the language.</li>
+        <li><b>Many right answers.</b> One instruction admits many drawings that differ in shape, stroke order, start
+          point and direction. A policy that averages them draws nothing recognisable.</li>
+        <li><b>Failures you can see.</b> The canvas is the record: semantic, spatial and execution errors stay visible on paper.</li>
+      </ol>
+      <p>The second point is what sets BURGER apart from manipulation benchmarks, so we measure it directly.</p>
+    </div>
+
+    <figure class="fig" id="evidence">
+      <div class="explorer" id="explorer">
       <div class="ex-panels">
         <figure class="ex-panel" data-set="libero">
           <figcaption><span class="sw sw-lib"></span>LIBERO <span class="ex-instr" id="ex-lib-name"></span></figcaption>
@@ -143,66 +137,55 @@
         <svg id="strip" class="strip" role="img" aria-label="Effective trajectory modes per instruction, LIBERO and BURGER"></svg>
       </div>
     </div>
+      <figcaption><b>Figure 1. One instruction, many valid routes.</b> Every demonstration of one instruction, overlaid as
+        planar end-effector paths aligned at their start point and coloured by route cluster. The strip shows all 40
+        count-matched instructions per dataset. 31 of LIBERO's 40 take exactly one route (N<sub>eff</sub> = 1.00); BURGER's
+        average is 7.13, <b>6.6×</b> higher. Toggle <q>Show the average path</q>: on LIBERO the mean is a valid trajectory,
+        on BURGER it lands between routes, so a policy that regresses to the mean fails visibly.</figcaption>
+    </figure>
 
-    <div class="evid-notes">
-      <div>
-        <h3>Not cherry-picked</h3>
-        <p>Every instruction of the count-matched comparison is plotted above (40 per dataset; 42 episodes each for BURGER, 29–42 for LIBERO).
-          31 of LIBERO's 40 score exactly 1.00. The two distributions overlap at a single pair: LIBERO's most varied
-          instruction (<q>open the middle drawer of the cabinet</q>, 1.96) against BURGER's least
-          (<q>draw a smiley face</q>, 1.61).</p>
-      </div>
-      <div>
-        <h3>Not an artefact of <i>k</i></h3>
-        <figure class="ksweep">
-          <svg id="ksweep" role="img" aria-label="Effective modes versus number of clusters k"></svg>
-        </figure>
-        <p class="small">LIBERO stays at 1.05–1.10 at every clustering resolution. BURGER keeps rising,
-          which is what real multimodality looks like. The ratio depends on <i>k</i>, so we report it at the
-          paper's <i>k</i> = 24: 7.13 vs 1.09, 6.6×.</p>
-      </div>
-      <div>
-        <h3>Why it matters</h3>
-        <p>On LIBERO the average of an instruction's demonstrations <em>is</em> a valid trajectory, so a policy
-          that regresses to the mean and one that models the full distribution look the same. On BURGER the
-          average lands between routes. Toggle <q>Show the average path</q> to see it: the mean of several
-          valid drawings is not a drawing.</p>
-      </div>
+    <div class="split2">
+      <figure class="fig">
+        <div class="ksweep"><svg id="ksweep" role="img" aria-label="Effective modes versus number of clusters k"></svg></div>
+        <figcaption><b>Not an artefact of <i>k</i>.</b> LIBERO stays at 1.05–1.10 at every clustering resolution; BURGER keeps
+          rising. We report the paper's <i>k</i> = 24.</figcaption>
+      </figure>
+      <figure class="fig">
+        <div class="vgrid g4" id="same-helmet"></div>
+        <figcaption><b>The diversity is in the data.</b> Eight training demonstrations of <q>draw a helmet</q> (3× speed):
+          same instruction and canvas, different helmets, stroke orders and routes.</figcaption>
+      </figure>
     </div>
 
     <details class="method">
-      <summary>How the routes are counted</summary>
-      <p>Planar end-effector paths, count-matched to 40 instructions × ≈42 episodes per dataset, using all four
-        LIBERO suites. Each path is resampled to 32 points and described by its start-relative <i>xy</i> path plus
-        step vectors. One shared <i>k</i>-means codebook (<i>k</i> = 24) is fitted on the pooled trajectories of
-        both datasets, and the effective number of modes per instruction is
-        <span class="math">N<sub>eff</sub> = exp(−Σ<sub>j</sub> p<sub>j</sub> log p<sub>j</sub>)</span>,
-        where <i>p<sub>j</sub></i> is the share of that instruction's trajectories in cluster <i>j</i>.
-        1.0 means every episode takes the same route. The explorer above shows the actual trajectories and
-        cluster assignments behind the paper's Fig. 2.</p>
+      <summary>How routes are counted</summary>
+      <p>Planar end-effector paths, count-matched to 40 instructions × ≈42 episodes per dataset (all four LIBERO suites).
+        Each path is resampled to 32 points and described by its start-relative <i>xy</i> path plus step vectors. One shared
+        <i>k</i>-means codebook (<i>k</i> = 24) is fitted on the pooled trajectories of both datasets, and
+        <span class="math">N<sub>eff</sub> = exp(−Σ<sub>j</sub> p<sub>j</sub> log p<sub>j</sub>)</span>, where
+        <i>p<sub>j</sub></i> is the share of the instruction's trajectories in cluster <i>j</i>. The two distributions overlap
+        at a single pair: LIBERO's most varied instruction (<q>open the middle drawer of the cabinet</q>, 1.96) against
+        BURGER's least (<q>draw a smiley face</q>, 1.61).</p>
     </details>
-
-    <div class="same">
-      <p class="strip-title">Eight demonstrations of <q>draw a helmet</q> from the training set
-        <span class="hint">· 3× speed</span></p>
-      <div class="vgrid g8" id="same-helmet"></div>
-      <p class="small">Same instruction, same blank canvas. Different helmets, different stroke orders, different routes.
-        After training on data like this, π<sub>0.5</sub> keeps 3.6–5.1 effective modes per instruction in its
-        own rollouts, against ≈7.5 in the data (paper, Sec. IV-C).</p>
-    </div>
   </div>
 </section>
 
-<!-- PIPELINE -->
-<section class="sec" id="pipeline">
+<!-- 2 METHOD -->
+<section class="sec" id="method">
   <div class="wrap">
-    <p class="kicker">Method</p>
-    <h2>From a prompt to a robot trajectory</h2>
-    <p class="lede">Each demonstration is generated, not teleoperated. A text prompt becomes a sketch, the sketch
-      becomes ordered strokes, and a robot arm replays the strokes on a canvas while every observation and
-      action is recorded. Pick an object to follow one sample through each stage.</p>
+    <header class="sec-head">
+      <p class="secnum">2</p>
+      <h2>Method</h2>
+      <p class="sub">A prompt-driven pipeline turns text into robot trajectories, so data scale and diversity are controllable.</p>
+    </header>
 
-    <div class="pipe" id="pipe">
+    <h3 class="subsec">2.1 From a prompt to a robot trajectory</h3>
+    <p class="wrap-text">Demonstrations are generated, not teleoperated. A text-to-image model draws a line-art sketch; the
+      sketch is skeletonised into one-pixel strokes, which are ordered (top to bottom, outline before details, nearest
+      stroke next); an end-effector pose controller replays the strokes with pen lifts between them while every
+      (observation, action) pair is recorded. Pick an object to follow one real sample through each stage.</p>
+    <figure class="fig">
+      <div class="pipe" id="pipe">
       <div class="pipe-pick" role="radiogroup" aria-label="Choose an object" id="pipe-pick"></div>
       <ol class="pipe-stages">
         <li>
@@ -233,248 +216,198 @@
             (observation, action) pairs are recorded at every step.</p>
         </li>
       </ol>
-      <p class="small pipe-note">Sketch, skeleton and strokes above are the real intermediate files for sample 001
-        of each class. The video is that same SVG replayed in ManiSkill / SAPIEN. The skeleton is re-run with the
-        pipeline's own script, and its lines are thickened for display.</p>
     </div>
+      <figcaption><b>Figure 2. The generation pipeline.</b> Sketch, skeleton and strokes are the real intermediate files for
+        sample 001 of each class (skeleton lines thickened for display); the video is that SVG replayed in ManiSkill / SAPIEN.</figcaption>
+    </figure>
 
-    <div class="sims">
-      <div class="sims-head">
-        <h3>The same task in three simulators</h3>
-        <p>The trajectory-generation interface isn't tied to one engine. One SVG task, executed in SAPIEN, MuJoCo
-          and Isaac Sim through each simulator's own robot-control interface. <span class="hint">3× speed</span></p>
-      </div>
+    <h3 class="subsec">2.2 Simulator-agnostic</h3>
+    <figure class="fig">
       <div class="vgrid g3" id="sims"></div>
+      <figcaption><b>Figure 3.</b> One SVG task executed in SAPIEN, MuJoCo and Isaac Sim through each simulator's own
+        robot-control interface (3× speed). The same interface drives the real robot (Section 4).</figcaption>
+    </figure>
+
+    <h3 class="subsec">2.3 The BURGER dataset</h3>
+    <p class="wrap-text"><b>282 tasks × 100 demonstrations = 28,200 trajectories.</b> 132 single objects, chosen from the
+      <i>Quick, Draw!</i> categories as everyday things an arm can draw, and 150 compositions pairing base objects with a
+      spatial relation (100 <q>left of</q>, 50 <q>over</q> / <q>under</q>). Stored as HDF5 and converted to standard
+      robot-learning formats.</p>
+    <figure class="fig">
+      <div class="gallery" id="gallery"></div>
+      <figcaption><b>Figure 4.</b> One generated demonstration per object, 32 of the 132 classes. Hover or tap to play;
+        time-lapse speed on each tile.</figcaption>
+    </figure>
+
+    <h3 class="subsec">2.4 A drawing metric that agrees with people</h3>
+    <div class="split">
+      <p>CLIP-style scores measure global image–text alignment and miss fine errors, such as two objects on the wrong sides.
+        We train a lightweight projection head on a frozen DINOv3 backbone so that drawings of a class cluster together,
+        and score a drawing by its similarity to the target-class prototype. Compositions are split at the
+        minimum-connectivity boundary, so each object and the relation are checked separately. In a user study, 66
+        participants ranked five drawings for each of 10 classes.</p>
+      <table class="tbl">
+        <caption>Table 1. Agreement with human rankings</caption>
+        <thead><tr><th scope="col">Metric</th><th scope="col">Spearman ρ</th><th scope="col">Kendall τ<sub>b</sub></th><th scope="col">Pairwise</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">CLIPScore</th><td>0.592</td><td>0.433</td><td>0.803</td></tr>
+          <tr class="ours"><th scope="row">Ours (DINOv3)</th><td>0.834</td><td>0.655</td><td>0.875</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<!-- DATASET -->
-<section class="sec tint" id="dataset">
+<!-- 3 EXPERIMENTS -->
+<section class="sec tint" id="experiments">
   <div class="wrap">
-    <p class="kicker">Dataset</p>
-    <h2>282 drawing tasks, 100 demonstrations each</h2>
-    <div class="ds-facts">
-      <p><b>132 single objects</b>, chosen from the <i>Quick, Draw!</i> categories as everyday things a robot arm can draw.</p>
-      <p><b>150 compositions</b>: pairs of base objects with a spatial relation. 100 use <q>left of</q> and
-        50 use <q>over</q> or <q>under</q>.</p>
-      <p><b>28,200 trajectories</b> in total, stored as HDF5 and converted to standard robot-learning dataset formats.</p>
-    </div>
-    <p class="strip-title">Gallery <span class="hint">· one generated demonstration per object, 32 of 132 classes ·
-      hover or tap to play · time-lapse, speed on each tile</span></p>
-    <div class="gallery" id="gallery"></div>
-  </div>
-</section>
+    <header class="sec-head">
+      <p class="secnum">3</p>
+      <h2>Experiments</h2>
+      <p class="sub">Five VLAs, three questions: do they scale, do they compose, and do they keep the modes?</p>
+    </header>
+    <p class="wrap-text">We fine-tune π<sub>0</sub>, π<sub>0.5</sub> and π<sub>0</sub>-FAST (flow-matching and FAST-tokenised
+      policies from the OpenPI family), OpenVLA (autoregressive) and OpenVLA-OFT (parallel-decoded action chunks) on BURGER,
+      and score every final canvas with the metric of Section 2.4.</p>
 
-<!-- RESULTS -->
-<section class="sec" id="results">
-  <div class="wrap">
-    <p class="kicker">Results</p>
-    <h2>What five VLA models learn from drawing</h2>
-    <p class="lede">We evaluate π<sub>0</sub>, π<sub>0.5</sub> and π<sub>0</sub>-FAST (flow-matching and FAST-tokenised
-      policies from the OpenPI family), OpenVLA (autoregressive) and OpenVLA-OFT (parallel-decoded action chunks).
-      Drawings are scored with a DINOv3-based metric checked against human rankings (see <q>Evaluation metric</q>).</p>
-
-    <div class="tabs" id="result-tabs">
-      <div role="tablist" aria-label="Result">
-        <button role="tab" aria-selected="true" aria-controls="t-scaling" id="tb-scaling">Data scaling</button>
-        <button role="tab" aria-selected="false" aria-controls="t-comp" id="tb-comp" tabindex="-1">Spatial composition</button>
-        <button role="tab" aria-selected="false" aria-controls="t-metric" id="tb-metric" tabindex="-1">Evaluation metric</button>
+    <h3 class="subsec" id="scaling">3.1 More classes and more demonstrations help, for some models</h3>
+    <div class="split">
+      <div>
+        <p>Training sets vary from 10 to 132 object classes and from 10 to 100 demonstrations per class. For π<sub>0</sub>
+          and π<sub>0.5</sub>, increasing either generally raises the drawing score. π<sub>0</sub>-FAST fluctuates more and
+          does not consistently benefit from more data, which suggests it is more sensitive to the multimodal data distribution.</p>
       </div>
-
-      <div role="tabpanel" id="t-scaling" aria-labelledby="tb-scaling">
-        <div class="split">
-          <div>
-            <h3>More classes, more demonstrations: better drawings, for some models</h3>
-            <p>Training sets vary from 10 to 132 object classes and from 10 to 100 demonstrations per class.
-              For π<sub>0</sub> and π<sub>0.5</sub>, increasing either generally raises the drawing score. π<sub>0</sub>-FAST
-              fluctuates more and doesn't consistently benefit from more data, which suggests it is more sensitive
-              to the multimodal data distribution.</p>
-            <p class="small">Y-axis: mean similarity to the target-class prototype under our metric. Figure reproduced from the paper (Fig. 6).</p>
-          </div>
-          <div class="fig6" role="group" aria-label="Scaling plots">
-            <div class="seg" role="radiogroup" aria-label="Model" id="fig6-seg">
-              <button role="radio" aria-checked="true" data-k="pi0">π<sub>0</sub></button>
-              <button role="radio" aria-checked="false" data-k="pi05">π<sub>0.5</sub></button>
-              <button role="radio" aria-checked="false" data-k="pi0fast">π<sub>0</sub>-FAST</button>
-            </div>
-            <img id="fig6-img" src="assets/figures/fig6_pi0.webp" width="1200" height="870" loading="lazy"
-                 alt="Mean target similarity versus number of training classes, for 10, 50 and 100 demonstrations per class">
-          </div>
+      <figure class="fig fig6">
+        <div class="seg" role="radiogroup" aria-label="Model" id="fig6-seg">
+          <button role="radio" aria-checked="true" data-k="pi0">π<sub>0</sub></button>
+          <button role="radio" aria-checked="false" data-k="pi05">π<sub>0.5</sub></button>
+          <button role="radio" aria-checked="false" data-k="pi0fast">π<sub>0</sub>-FAST</button>
         </div>
-      </div>
-
-      <div role="tabpanel" id="t-comp" aria-labelledby="tb-comp" hidden>
-        <h3>Spatial relations transfer to object pairs never seen together</h3>
-        <p>Policies trained on compositional prompts (<q>draw A left of B</q>, <q>A over B</q>, <q>A under B</q>)
-          produce valid left–right and over–under layouts for pairs that never appear in training, and respond
-          correctly to the relation word. Object quality degrades under composition, more so once vertical
-          relations are added, even when the layout is right.</p>
-        <p class="strip-title">π<sub>0</sub> on unseen pairs <span class="hint">· simulated · ≈9× speed</span></p>
-        <div class="vgrid g4" id="comp-videos"></div>
-        <p class="strip-title">Every episode, not a selection <span class="hint">· final canvases of all 10 evaluation
-          episodes per prompt, in order</span></p>
-        <div class="canvas-rows" id="comp-canvases"></div>
-      </div>
-
-      <div role="tabpanel" id="t-metric" aria-labelledby="tb-metric" hidden>
-        <div class="split">
-          <div>
-            <h3>A metric that agrees with people</h3>
-            <p>CLIP-style scores measure global image–text alignment and can miss fine errors, like a drawing with
-              the two objects on the wrong sides. We train a lightweight projection head on a frozen DINOv3 backbone
-              so that drawings of the same class cluster together, then score a drawing by its similarity to the
-              target-class prototype. Compositions are split at the minimum-connectivity boundary, so each object and
-              the relation between them are checked separately.</p>
-            <p>In a user study, 66 participants ranked five drawings for each of 10 classes: four from VLA policies and one reference.</p>
-          </div>
-          <div>
-            <table class="tbl">
-              <caption>Agreement with human rankings (paper, Table I)</caption>
-              <thead><tr><th scope="col">Metric</th><th scope="col">Spearman ρ</th><th scope="col">Kendall τ<sub>b</sub></th><th scope="col">Pairwise</th></tr></thead>
-              <tbody>
-                <tr><th scope="row">CLIPScore</th><td>0.592</td><td>0.433</td><td>0.803</td></tr>
-                <tr class="ours"><th scope="row">Ours (DINOv3)</th><td>0.834</td><td>0.655</td><td>0.875</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        <img id="fig6-img" src="assets/figures/fig6_pi0.webp" width="1200" height="870" loading="lazy"
+             alt="Mean target similarity versus number of training classes, for 10, 50 and 100 demonstrations per class">
+        <figcaption><b>Figure 5.</b> Mean similarity to the target-class prototype vs. number of training classes.</figcaption>
+      </figure>
     </div>
 
-    <figure class="paperfig">
+    <h3 class="subsec" id="composition">3.2 Spatial relations transfer to unseen object pairs</h3>
+    <p class="wrap-text">Policies trained on <q>A left of B</q>, <q>A over B</q> and <q>A under B</q> produce the requested
+      layout for object pairs never seen together in training, and respond to the relation word. Object quality degrades
+      under composition, more so with vertical relations, even when the layout is right.</p>
+    <figure class="fig">
       <img src="assets/figures/fig5_eval.webp" width="2000" height="807" loading="lazy"
            alt="Training-set sketches and VLA rollouts for single objects, compositions and zero-shot compositions">
-      <figcaption><b>Training data and rollouts, side by side.</b> Single objects (left), seen compositions (middle) and
-        zero-shot compositions of familiar objects (right). Paper, Fig. 5.</figcaption>
+      <figcaption><b>Figure 6.</b> Training sketches and rollouts for single objects (left), seen compositions (middle) and
+        zero-shot compositions of familiar objects (right).</figcaption>
     </figure>
-  </div>
-</section>
+    <figure class="fig">
+      <div class="vgrid g2" id="comp-videos"></div>
+      <figcaption><b>Figure 6b.</b> π<sub>0</sub> rollouts on compositional prompts: a seen pair (left) and a pair never seen
+        together in training (right). Each object is drawn on the requested side. Hover or tap to play.</figcaption>
+    </figure>
 
-<!-- DIAGNOSIS -->
-<section class="sec tint" id="diagnosis">
-  <div class="wrap">
-    <p class="kicker">Diagnosis</p>
-    <h2>Can your VLA even draw a circle?</h2>
-    <p class="lede">Strip the task down to one shape. 100 demonstrations share the same circle shape and radius but vary
-      its centre, start point and direction. Five policies, 20 rollouts each, from randomised initial poses.
-      The canvas shows each model's failure plainly.</p>
-
-    <div class="circ" id="circ"></div>
-    <figure class="paperfig tight">
-      <img src="assets/figures/fig9_circle.webp" width="1390" height="373" loading="lazy"
+    <h3 class="subsec" id="diagnosis">3.3 Diagnosis: can your VLA even draw a circle?</h3>
+    <p class="wrap-text">To isolate action generation, we strip the task to one shape: 100 demonstrations share the circle's
+      shape and radius but vary its centre, start point and direction (56 % clockwise). Each model runs 20 rollouts from
+      randomised initial poses. Two findings follow. <b>Chunking fixes coherence:</b> OpenVLA keeps the pen down but loses
+      planar progress, OFT with chunk length 1 rarely makes stable contact, and chunk length 8 restores coherent strokes.
+      <b>But not mode coverage:</b> OFT and π<sub>0</sub>-FAST collapse onto a few start points, and π<sub>0</sub>-FAST draws
+      clockwise in 19 of 20 runs. The flow-matching π<sub>0.5</sub> keeps the balance.</p>
+    <figure class="fig">
+      <div class="circ" id="circ"></div>
+      <img class="below" src="assets/figures/fig9_circle.webp" width="1390" height="373" loading="lazy"
            alt="Overlaid circle trajectories of 20 rollouts for each of five models, coloured by direction">
-      <figcaption>All 20 rollouts per model, overlaid. Red: clockwise; blue: counter-clockwise; grey: pen up. Paper, Fig. 9.</figcaption>
+      <figcaption><b>Figure 7.</b> Top: one rollout per model. Bottom: all 20 rollouts overlaid; red clockwise, blue
+        counter-clockwise, grey pen up.</figcaption>
     </figure>
-
-    <div class="split findings">
-      <div>
-        <h3>Chunking fixes coherence…</h3>
-        <p>OpenVLA keeps the pen on the paper but loses planar progress. OpenVLA-OFT with chunk length 1 often never makes
-          stable contact. Raising the chunk length from 1 to 8 restores contact and coherent strokes.</p>
-        <h3>…but not mode coverage</h3>
-        <p>Coherent isn't the same as diverse. OFT with chunks and π<sub>0</sub>-FAST concentrate on a subset of start points
-          and directions. π<sub>0</sub>-FAST draws clockwise in 19 of 20 runs, against a 56 / 44 split in the data.
-          The flow-matching π<sub>0.5</sub> keeps the balance.</p>
-      </div>
-      <div class="tbl-scroll">
-        <table class="tbl numtbl">
-          <caption>Circle task, 20 rollouts per model <span class="web">web supplement</span></caption>
-          <thead><tr>
-            <th scope="col">Source</th><th scope="col">Pen contact</th><th scope="col">cw / ccw</th>
-            <th scope="col">Start sectors<br><span class="u">of 36</span></th><th scope="col">Arc covered<br><span class="u">mean, °</span></th>
-          </tr></thead>
-          <tbody>
-            <tr class="ref"><th scope="row">Demonstrations <span class="u">(n = 100)</span></th><td>100%</td><td>56 / 44</td><td>35</td><td>357</td></tr>
-            <tr><th scope="row">OpenVLA</th><td>100%</td><td>8 / 12</td><td>13</td><td class="bad">248</td></tr>
-            <tr><th scope="row">OFT, chunk 1</th><td class="bad">30%</td><td>6 / 0</td><td class="bad">4</td><td class="bad">115</td></tr>
-            <tr><th scope="row">OFT, chunk 8</th><td>100%</td><td>11 / 9</td><td>10</td><td>351</td></tr>
-            <tr><th scope="row">π<sub>0</sub>-FAST</th><td>100%</td><td class="bad">19 / 1</td><td>11</td><td>355</td></tr>
-            <tr><th scope="row">π<sub>0.5</sub></th><td>100%</td><td>11 / 9</td><td>15</td><td>334</td></tr>
-          </tbody>
-        </table>
-        <p class="small">Start sectors: how many of 36 ten-degree bins around the circle contain at least one first
-          pen-down point. Arc covered: mean angular extent each rollout draws. The direction split counts only
-          rollouts that made contact.</p>
-      </div>
+    <div class="tbl-scroll">
+      <table class="tbl numtbl">
+        <caption>Table 2. Circle task, 20 rollouts per model <span class="web">web supplement</span></caption>
+        <thead><tr>
+          <th scope="col">Source</th><th scope="col">Pen contact</th><th scope="col">cw / ccw</th>
+          <th scope="col">Start sectors <span class="u">of 36</span></th><th scope="col">Arc covered <span class="u">mean, °</span></th>
+        </tr></thead>
+        <tbody>
+          <tr class="ref"><th scope="row">Demonstrations <span class="u">(n = 100)</span></th><td>100%</td><td>56 / 44</td><td>35</td><td>357</td></tr>
+          <tr><th scope="row">OpenVLA</th><td>100%</td><td>8 / 12</td><td>13</td><td class="bad">248</td></tr>
+          <tr><th scope="row">OFT, chunk 1</th><td class="bad">30%</td><td>6 / 0</td><td class="bad">4</td><td class="bad">115</td></tr>
+          <tr><th scope="row">OFT, chunk 8</th><td>100%</td><td>11 / 9</td><td>10</td><td>351</td></tr>
+          <tr><th scope="row">π<sub>0</sub>-FAST</th><td>100%</td><td class="bad">19 / 1</td><td>11</td><td>355</td></tr>
+          <tr><th scope="row">π<sub>0.5</sub></th><td>100%</td><td>11 / 9</td><td>15</td><td>334</td></tr>
+        </tbody>
+      </table>
+      <p class="small">Start sectors: 10° bins containing at least one first pen-down point. Arc covered: mean angular extent
+        per rollout. The direction split counts only rollouts that made contact.</p>
     </div>
 
+    <h3 class="subsec">3.4 On real object classes, failures differ by model</h3>
     <div class="split fail">
-      <figure>
+      <div><p>OpenVLA and π<sub>0</sub>-FAST are sensitive to the initial end-effector pose: OpenVLA can get trapped in a local
+        region, π<sub>0</sub>-FAST can drift away from the target area. Flow-matching policies sometimes don't stop once the
+        object is finished and overpaint it. These failures are visible on the canvas, which a success rate alone cannot
+        show. After training, π<sub>0.5</sub> keeps 3.6–5.1 effective modes per instruction in its own rollouts, against
+        ≈7.5 in the data.</p></div>
+      <figure class="fig">
         <img src="assets/figures/fig8_failures.webp" width="1200" height="432" loading="lazy"
              alt="Failure examples: drifting from the initial pose (apple, bathtub), and overpainting a bench">
+        <figcaption><b>Figure 8.</b> Pose-sensitive drift (apple, bathtub) and overpainting (bench).</figcaption>
       </figure>
-      <div>
-        <h3>On real objects, failures differ by model</h3>
-        <p>OpenVLA and π<sub>0</sub>-FAST are sensitive to the initial end-effector pose: OpenVLA can get trapped in a
-          local region, and π<sub>0</sub>-FAST can drift away from the target area. Flow-matching policies sometimes
-          don't stop once the object is finished and overpaint it. These failures read the same on every canvas,
-          which is what a success rate alone can't show. Paper, Fig. 8.</p>
-      </div>
     </div>
   </div>
 </section>
 
-<!-- REAL -->
+<!-- 4 REAL -->
 <section class="sec" id="real">
   <div class="wrap">
-    <p class="kicker">Real world</p>
-    <h2>On a real Franka Panda</h2>
-    <p class="lede">The same pipeline collects real demonstrations: the arm replays generated strokes while two RealSense
-      cameras record. The paper's setting fine-tunes π<sub>0.5</sub> on 10 object classes with 10 demonstrations each. Every
-      clip below is what the policy itself sees, its own 320×240 camera input, sped up (marked on each clip). Each row names
-      the real-robot training data of the policy shown.</p>
+    <header class="sec-head">
+      <p class="secnum">4</p>
+      <h2>Real-robot deployment</h2>
+      <p class="sub">The same pipeline collects real data, and a fine-tuned π<sub>0.5</sub> draws reactively on a Franka Panda.</p>
+    </header>
+    <p class="wrap-text">The arm replays generated strokes while two RealSense cameras record, giving a real dataset in the
+      same format as the simulated one. The paper's setting fine-tunes π<sub>0.5</sub> on 10 classes × 10 demonstrations.
+      Every clip below is the policy's own 320×240 camera input, sped up as marked; each row notes the real training data
+      of the policy shown.</p>
 
     <div class="real-rows">
       <article class="real-row">
-        <header><span class="num">1</span><h3>Moving the camera</h3>
-          <p>Same prompt, <q>draw an apple</q>. The camera that feeds the policy is moved between runs, and the drawing task is unaffected.</p>
-          <p class="src">π<sub>0.5</sub> · real data: 3 classes × 10 demos</p></header>
-        <div class="vgrid g2" data-clips="real_cam_front:Default front view|real_cam_moved:Camera moved to an oblique view"></div>
-      </article>
-      <article class="real-row">
-        <header><span class="num">2</span><h3>Closing the loop on the canvas</h3>
-          <p>Given a cup with no handle, the policy adds the handle. When a person draws a bicycle's rear wheel mid-episode,
-            the robot sees the updated canvas, skips the wheel and finishes the rest.</p>
-          <p class="src">π<sub>0.5</sub> · cup: simulated 10 × 10 + real 3 × 10 · bicycle: real 10 × 10</p></header>
+        <header><h3>Closing the loop on the canvas</h3>
+          <p>Given a cup without a handle, the policy adds the handle. When a person draws a bicycle's rear wheel
+            mid-episode, the robot sees it, skips the wheel and finishes the rest.</p>
+          <p class="src">π<sub>0.5</sub> · cup: sim 10 × 10 + real 3 × 10 · bicycle: real 10 × 10</p></header>
         <div class="vgrid g2" data-clips="real_cup_complete:Completes a partial cup|real_bike_human:Human adds the rear wheel"></div>
       </article>
       <article class="real-row">
-        <header><span class="num">3</span><h3>Multimodal on hardware</h3>
-          <p>Same prompt, <q>draw a bicycle</q>, two runs. One starts with the left wheel, the other with the right.</p>
-          <p class="src">π<sub>0.5</sub> · real data: 10 classes × 10 demos</p></header>
+        <header><h3>Multimodal on hardware</h3>
+          <p>Same prompt, <q>draw a bicycle</q>: one run starts with the left wheel, the other with the right.</p>
+          <p class="src">π<sub>0.5</sub> · real 10 × 10</p></header>
         <div class="vgrid g2" data-clips="real_bike_mode_a:Starts with the left wheel|real_bike_mode_b:Starts with the right wheel"></div>
+      </article>
+      <article class="real-row">
+        <header><h3>Moving the camera</h3>
+          <p>Same prompt, <q>draw an apple</q>, with the policy's camera moved between runs.</p>
+          <p class="src">π<sub>0.5</sub> · real 3 × 10</p></header>
+        <div class="vgrid g2" data-clips="real_cam_front:Default front view|real_cam_moved:Camera moved to an oblique view"></div>
       </article>
     </div>
 
     <details class="more">
-      <summary>More real-robot rollouts <span class="hint">· 8 more classes · π<sub>0.5</sub>, real 10 × 10</span></summary>
+      <summary>More real-robot rollouts and data collection <span class="hint">· 8 classes, π<sub>0.5</sub>, real 10 × 10</span></summary>
       <div class="vgrid g4" data-clips="real_cake:birthday cake|real_horse:horse|real_guitar:guitar|real_train:train|real_butterfly:butterfly|real_elephant:elephant|real_clock:alarm clock|real_backpack:backpack"></div>
+      <p class="small">Real data collection, front and back RealSense views, 4× speed:</p>
+      <div class="vgrid g2 collect" data-clips="collect_ms:Collecting “moon left of sailboat”|collect_cake:Collecting “birthday cake”"></div>
     </details>
-
-    <div class="collect">
-      <div>
-        <h3>How the real data is collected</h3>
-        <p>The real dataset uses the same format as the simulated one, with front and back RealSense views. Either can be
-          the policy input. The same pipeline handles single objects and compositions, here <q>moon left of sailboat</q>
-          and <q>birthday cake</q>. <span class="hint">4× speed</span></p>
-      </div>
-      <div class="vgrid g2" data-clips="collect_ms:Collecting “moon left of sailboat”|collect_cake:Collecting “birthday cake”"></div>
-    </div>
   </div>
 </section>
 
 <!-- VIDEO -->
-<section class="sec tint" id="overview-video">
+<section class="sec tint" id="video">
   <div class="wrap narrow">
-    <p class="kicker">Video</p>
-    <h2>Three-minute overview</h2>
+    <h2>Video</h2>
     <figure class="ovid">
-      <video controls preload="none" playsinline poster="assets/posters/overview.jpg"
-             aria-label="Narrated overview of BURGER">
+      <video controls preload="none" playsinline poster="assets/posters/overview.jpg" aria-label="Narrated overview of BURGER">
         <source src="assets/videos/overview.mp4" type="video/mp4">
       </video>
-      <figcaption>Narrated, with sound. 2:52.</figcaption>
+      <figcaption>Narrated overview, with sound. 2:52.</figcaption>
     </figure>
   </div>
 </section>
@@ -482,7 +415,6 @@
 <!-- LIMITATIONS -->
 <section class="sec" id="limits">
   <div class="wrap narrow">
-    <p class="kicker">Scope</p>
     <h2>Limitations</h2>
     <ul class="limits">
       <li><b>Simplified physics.</b> BURGER targets sketch-level strokes with a rigid drawing tool. It doesn't model
@@ -499,7 +431,6 @@
 <!-- CITE -->
 <section class="sec tint" id="cite">
   <div class="wrap narrow">
-    <p class="kicker">Cite</p>
     <h2>BibTeX</h2>
     <p class="small">Under double-blind review. This entry will be updated on acceptance.</p>
     <div class="bib">
